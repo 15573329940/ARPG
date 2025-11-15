@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: c0c5dd0275493e44d9ef7418695dd3cd
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 21300
   internalIDToNameTable:
   - first:
       1: 100000
@@ -430,7 +430,6 @@ ModelImporter:
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
-    importPhysicalCameras: 1
     importVisibility: 1
     importBlendShapes: 1
     importCameras: 0
@@ -458,7 +457,6 @@ ModelImporter:
     secondaryUVMinObjectScale: 1
     secondaryUVPackMargin: 4
     useFileScale: 1
-    strictVertexDataChecks: 0
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0
@@ -771,8 +769,7 @@ ModelImporter:
     - name: ik_hand_r
       parentName: ik_hand_gun
       position: {x: -0, y: 0, z: 0.000000076293944}
-      rotation: {x: -0.000000022351745, y: 0.0000000074505793, z: 0.000000014901159,
-        w: 1}
+      rotation: {x: -0.000000022351745, y: 0.0000000074505793, z: 0.000000014901159, w: 1}
       scale: {x: 1.0000001, y: 0.9999999, z: 0.9999997}
     - name: ik_hand_l
       parentName: ik_hand_gun
@@ -802,7 +799,6 @@ ModelImporter:
   humanoidOversampling: 1
   avatarSetup: 1
   addHumanoidExtraRootOnlyWhenUsingAvatar: 0
-  importBlendShapeDeformPercent: 0
   remapMaterialsIfMaterialImportModeIsNone: 1
   additionalBone: 0
   userData: 

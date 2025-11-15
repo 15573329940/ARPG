@@ -6,15 +6,17 @@ using UnityEngine;
 public class StateMachineSystem : MonoBehaviour
 {
 
+    
     public NB_Transition transition;
 
+    
     public StateActionSO currentState;
 
 
     private void Awake()
     {
-        transition?.Init(this);
-        currentState?.OnEnter(this);
+        transition?.InitTransition(this);
+        currentState?.OnEnter();
     }
 
 
@@ -23,9 +25,9 @@ public class StateMachineSystem : MonoBehaviour
         StateMachineTick();
     }
 
-    private void StateMachineTick() 
+    private void StateMachineTick()
     {
-        transition?.TryGetApplyCondition();//Ã¿Ò»Ö¡ï¿½ï¿½È¥ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Ð³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        transition?.TryGetApplyCondition();//Ã¿Ò»Ö¡¶¼È¥ÕÒÊÇ·ñÓÐ³ÉÁ¢µÄÌõ¼þ
         currentState?.OnUpdate();
 
 

@@ -7,66 +7,78 @@ using UnityEngine;
 public class NB_Transition : ScriptableObject
 {
     [Serializable]
-    private class StateAcitionConfig 
+    private class StateAcitionConfig
     {
         public StateActionSO fromState;
         public StateActionSO toState;
         public List<ConditionSO> conditions;
+
+        public void Init(StateMachineSystem stateMachineSystem)
+        {
+            fromState.InitState(stateMachineSystem);
+            toState.InitState(stateMachineSystem);
+
+            foreach (var item in conditions)
+            {
+                item.InitCondition(stateMachineSystem);
+            }
+        }
     }
-    
-    
-    //ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½×´Ì¬×ªï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+
+
+    //´æ´¢ËùÓÐ×´Ì¬×ª»»ÐÅÏ¢ºÍÌõ¼þ
+
     private Dictionary<StateActionSO, List<StateAcitionConfig>> states = new Dictionary<StateActionSO, List<StateAcitionConfig>>();
-    //ï¿½ï¿½È¡×´Ì¬ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½â²¿ï¿½ï¿½ï¿½ï¿½ï¿½Ö¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+
+    //»ñÈ¡×´Ì¬ÅäÖÃ£¬¼´Íâ²¿Ãæ°åµÄÊÖ¶¯ÅäÖÃÐÅÏ¢
     [SerializeField] private List<StateAcitionConfig> configStateData = new List<StateAcitionConfig>();
+
     private StateMachineSystem stateMachineSystem;
 
 
-    public void Init(StateMachineSystem stateMachineSystem) 
+    public void InitTransition(StateMachineSystem stateMachineSystem)
     {
         this.stateMachineSystem = stateMachineSystem;
         SaveAllStateTransitionInfo();
     }
-    
+
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+    /// ±£´æËùÓÐ×´Ì¬ÅäÖÃÐÅÏ¢
     /// </summary>
-    private void SaveAllStateTransitionInfo() 
+    private void SaveAllStateTransitionInfo()
     {
         foreach (var item in configStateData)
         {
-            //ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½Ãºï¿½ï¿½ï¿½Ï¢ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½Çµï¿½×ªï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-            if (!states.ContainsKey(item.fromState)) 
+            item.Init(stateMachineSystem);
+
+            //Õâ¸öÊ±ºòÍâÃæÃæ°åÒÑ¾­ÅäÖÃºÃÐÅÏ¢ÁË¡£ÎÒÃÇÐèÒª½«ËüÃÇµÄ×ª»»¹ØÏµ±£´æÆðÀ´
+            if (!states.ContainsKey(item.fromState))
             {
-                //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´æ´¢ï¿½Öµï¿½ï¿½Ç·ï¿½ï¿½Ð´ï¿½ï¿½Úµï¿½Key,ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½ï¿½ï¿½
+                //¼ì²âÏÖÔÚ´æ´¢×ÖµäÊÇ·ñÓÐ´æÔÚµÄKey,Èç¹ûÃ»ÓÐÎÒÃÇÐèÒª´´½¨Ò»¸ö£¬²¢ÇÒ³õÊ¼»¯ËüµÄÌõ¼þ´æ´¢ÈÝÆ÷
                 states.Add(item.fromState, new List<StateAcitionConfig>());
-
                 states[item.fromState].Add(item);
-
             }
-            else 
+            else
             {
                 states[item.fromState].Add(item);
-
             }
         }
-        foreach(var condition in item.conditions)
     }
 
 
     /// <summary>
-    /// ï¿½ï¿½ï¿½ï¿½È¥ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
+    /// ³¢ÊÔÈ¥»ñÈ¡Ìõ¼þ³ÉÁ¢µÄÐÂ×´Ì¬
     /// </summary>
-    public void TryGetApplyCondition() 
+    public void TryGetApplyCondition()
     {
         int conditionPriority = 0;
         int statePriority = 0;
         List<StateActionSO> toStates = new List<StateActionSO>();
         StateActionSO toState = null;
 
-        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç°×´Ì¬ï¿½ï¿½×ªï¿½ï¿½×´Ì¬ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
-        if (states.ContainsKey(stateMachineSystem.currentState)) 
+        //±éÀúµ±Ç°×´Ì¬ÄÜ×ªµÄ×´Ì¬ÊÇ·ñÓÐÌõ¼þ³ÉÁ¢
+        if (states.ContainsKey(stateMachineSystem.currentState))
         {
             foreach (var stateItem in states[stateMachineSystem.currentState])
             {
@@ -76,40 +88,38 @@ public class NB_Transition : ScriptableObject
                     {
                         if (conditionItem.GetConditionPriority() >= conditionPriority)
                         {
-                            //ï¿½ï¿½Ã´ï¿½Í½ï¿½×ªï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ë£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Î¨Ò»ï¿½ï¿½Ê±ï¿½ï¿½×´Ì¬
+                            //ÄÇÃ´¾Í½«×ª»»¹ØÏµÖÐÏÂÒ»¸ö×´Ì¬±£´æÆðÀ´¡£µ±ËùÓÐ¶¼±éÀúÍêÁË£¬»á´æÔÚÒ»¸öÎ¨Ò»ºÏÊÊµÄ×´Ì¬
                             conditionPriority = conditionItem.GetConditionPriority();
                             toStates.Add(stateItem.toState);
-
                         }
                     }
                 }
             }
         }
-        else 
+        else
         {
             return;
         }
 
-        if(toStates.Count!=0 || toStates != null) 
+        if (toStates.Count != 0 || toStates != null)
         {
-            //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            //±éÀú³ÉÁ¢Ìõ¼þµÄÓÅÏÈ¼¶£¬·µ»ØÓÅÏÈ¼¶×î¸ßµÄÄÄÄÇÒ»¸öÌõ¼þ
             foreach (var item in toStates)
             {
                 if (item.GetStatePriority() >= statePriority)
                 {
-                    //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½È¼ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½Ò»ï¿½ï¿½
+                    //½«ÏÂÒ»¸ö×´Ì¬ÉèÖÃÎªÓÅÏÈ¼¶×î¸ßµÄÄÇÒ»¸ö
                     statePriority = item.GetStatePriority();
                     toState = item;
-
                 }
             }
         }
 
-        if (toState != null) 
+        if (toState != null)
         {
             stateMachineSystem.currentState.OnExit();
             stateMachineSystem.currentState = toState;
-            stateMachineSystem.currentState.OnEnter(this.stateMachineSystem);            
+            stateMachineSystem.currentState.OnEnter();
             toStates.Clear();
             conditionPriority = 0;
             statePriority = 0;

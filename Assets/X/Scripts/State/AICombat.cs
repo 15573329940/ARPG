@@ -5,31 +5,128 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AICombat", menuName = "StateMachine/State/AICombat")]
 public class AICombat : StateActionSO
 {
-    public AIMovement _movement;
-    override public void OnUpdate()
+    private int randomHorizontal;
+
+    private float maxCombatDirection = 1.5f;
+
+    [SerializeField] private CombatSkillBase currentSkill;
+
+    public override void OnEnter()
     {
-        
+
     }
-    void NoCombat()
+
+    public override void OnUpdate()
     {
-        if(_animator.CheckAnimationTag("Motion") )
+        AICombatAction();
+    }
+
+    public override void OnExit()
+    {
+
+    }
+
+    private void AICombatAction()
+    {
+        if(currentSkill == null)
         {
-            if (_combatSystem.GetCurTargetDistance() < 4.2f)
+            //如果当前没技能 就执行AI移动函数
+            NoCombatMove();
+            GetSkill();
+        }
+        else
+        {
+            currentSkill.InvokeSkill();
+
+            if (!currentSkill.GetSkillIsDone())
             {
-                _movement.CharacterMoveInterface(-_movement.transform.forward, 1.5,true);
-                _animator.SetFloat(verticalID, 1.5f, 0.1f, Time.deltaTime);
-                _animator.SetFloat(horizontalID, 0f, 0.1f, Time.deltaTime);
-                if (_combatSystem.GetCurTargetDistance() < 1.8f)
-                {
-                    _animator.Play("Roll_B",0,0);
-                }
-            }
-            else
-            {
-                _movement.CharacterMoveInterface(_movement.transform.forward, 1.5,true);
-                _animator.SetFloat(verticalID, 1.5f, 0.1f, Time.deltaTime);
-                _animator.SetFloat(horizontalID, 0f, 0.1f, Time.deltaTime);
+                currentSkill = null;
             }
         }
     }
+
+    private void GetSkill()
+    {
+        if(currentSkill == null)
+        {
+            currentSkill = _combatSystem.GetAnDoneSkill();
+        }
+    }
+
+    private void NoCombatMove()
+    {
+        //如果动画处于Motion状态
+        if (_animator.CheckAnimationTag("Motion"))
+        {
+            if (_combatSystem.GetCurrentTargetDistance() < 2f + 0.1f)
+            {
+                _movement.CharacterMoveInterface(-_combatSystem.GetDirectionForTarget(), 1.4f, true);
+
+                _animator.SetFloat(verticalID, -1f, 0.25f, Time.deltaTime);
+                _animator.SetFloat(horizontalID, 0f, 0.25f, Time.deltaTime);
+
+                randomHorizontal = GetRandomHorizontal();
+
+                if (_combatSystem.GetCurrentTargetDistance() < 1.5 + 0.05f)
+                {
+                    if (!_animator.CheckAnimationTag("Hit") || !_animator.CheckAnimationTag("Defen"))
+                    {
+                        _animator.Play("Attack_0", 0, 0f);
+
+                        randomHorizontal = GetRandomHorizontal();
+                    }
+                }
+            }
+            else if (_combatSystem.GetCurrentTargetDistance() > 2f + 0.1f && _combatSystem.GetCurrentTargetDistance() < 6.1 + 0.5f)
+            {
+                if (HorizontalDirectionHasObject(randomHorizontal))
+                {
+                    switch (randomHorizontal)
+                    {
+                        case 1:
+                            randomHorizontal = -1;
+                            break;
+                        case -1:
+                            randomHorizontal = 1;
+                            break;
+                        default:
+                            break;
+                    }
+                }
+
+                _movement.CharacterMoveInterface(_movement.transform.right * ((randomHorizontal == 0) ? 1 : randomHorizontal), 1.4f, true);
+
+                _animator.SetFloat(verticalID, 0f, 0.25f, Time.deltaTime);
+                _animator.SetFloat(horizontalID, ((randomHorizontal == 0) ? 1 : randomHorizontal), 0.25f, Time.deltaTime);
+            }
+            else if (_combatSystem.GetCurrentTargetDistance() > 6.1 + 0.5f)
+            {
+                _movement.CharacterMoveInterface(_movement.transform.forward, 1.4f, true);
+
+                _animator.SetFloat(verticalID, 1f, 0.25f, Time.deltaTime);
+                _animator.SetFloat(horizontalID, 0f, 0.25f, Time.deltaTime);
+            }
+        }
+        else
+        {
+            _animator.SetFloat(verticalID, 0f);
+            _animator.SetFloat(horizontalID, 0f);
+            _animator.SetFloat(runID, 0f);
+        }
+    }
+
+    private bool HorizontalDirectionHasObject(int direction)
+    {
+        return Physics.Raycast(_movement.transform.position, _movement.transform.right * direction, 1.5f, 1 << 8);
+    }
+
+    private void SetAnimationValue(float movement,float horizontal,float vertical,float run)
+    {
+        _animator.SetFloat(movementID, movement, 0.15f, Time.deltaTime);
+        _animator.SetFloat(horizontalID, horizontal, 0.15f, Time.deltaTime);
+        _animator.SetFloat(verticalID, vertical, 0.15f, Time.deltaTime);
+        _animator.SetFloat(runID, run, 0.15f, Time.deltaTime);
+    }
+
+    private int GetRandomHorizontal() => Random.Range(-1, 2);
 }

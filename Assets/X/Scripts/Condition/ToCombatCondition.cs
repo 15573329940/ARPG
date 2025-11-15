@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using UGG.Move;
 using UnityEngine;
+
 [CreateAssetMenu(fileName = "ToCombatCondition", menuName = "StateMachine/Condition/ToCombatCondition")]
 public class ToCombatCondition : ConditionSO
 {
-    protected AICombatSystem _combatSystem;
-    
     public override bool ConditionSetUp()
     {
-        return _combatSystem.GetCurTarget() != null;    
+        //如果当前目标不等于空返回true 否则返回false
+        return (_combatSystem.GetCurrentTarget() != null) ? true : false;
     }
 }

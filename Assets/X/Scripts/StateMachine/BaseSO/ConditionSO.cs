@@ -1,18 +1,37 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UGG.Health;
+using UGG.Move;
 
 
 public abstract class ConditionSO : ScriptableObject
 {
-    [SerializeField] protected int priority;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
-    
-    public virtual void Init(StateMachineSystem stateSystem) { }
-    
-    public abstract bool ConditionSetUp();//ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
+    //ÒýÓÃ
+    protected AICombatSystem _combatSystem;
+    protected AIMovement _movement;
+    protected AIHealthSystem _healthSystem;
+    protected Animator animator;
+
+    [SerializeField] protected int priority;//Ìõ¼þÓÅÏÈ¼¶
+
+
+
+    public void InitCondition(StateMachineSystem stateSystem)
+    {
+        _combatSystem = stateSystem.GetComponentInChildren<AICombatSystem>();
+
+        _movement = stateSystem.GetComponent<AIMovement>();
+
+        _healthSystem = stateSystem.GetComponent<AIHealthSystem>();
+
+        animator = stateSystem.GetComponentInChildren<Animator>();
+    }
+
+    public abstract bool ConditionSetUp();//Ìõ¼þÊÇ·ñ³ÉÁ¢
 
     /// <summary>
-    /// ï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¼ï¿½
+    /// »ñÈ¡µ±Ç°Ìõ¼þµÄÓÅÏÈ¼¶
     /// </summary>
     /// <returns></returns>
     public int GetConditionPriority() => priority;
