@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace UGG.Move
 {
@@ -25,7 +26,7 @@ namespace UGG.Move
         [SerializeField,Header("移动速度")] private float walkSpeed;
         [SerializeField,Header("移动速度")] private float runSpeed;
         [SerializeField,Header("移动速度")] private float crouchMoveSpeed;
-        
+        [SerializeField,Header("动画移动速度倍率")] private float animationMoveSpeedMult;
         
         [SerializeField,Header("角色胶囊控制(下蹲)")] private Vector3 crouchCenter;
         [SerializeField] private Vector3 originCenter;
@@ -65,7 +66,7 @@ namespace UGG.Move
             base.Update();
             
             PlayerMoveDirection();
-            
+            UpdateRollAnimation();
         }
 
         private void LateUpdate()
@@ -73,7 +74,7 @@ namespace UGG.Move
             CharacterCrouchControl();
             UpdateMotionAnimation();
             UpdateCrouchAnimation();
-            UpdateRollAnimation();
+            
             
         }
 
@@ -175,6 +176,14 @@ namespace UGG.Move
 
         private void UpdateRollAnimation()
         {
+            if (_inputSystem.playerRoll)
+            {
+                characterAnimator.SetTrigger(rollID);
+            }
+            if(characterAnimator.CheckAnimationTag("Roll"))
+            {
+                CharacterMoveInterface(transform.forward,characterAnimator.GetFloat(animationMoveID) * animationMoveSpeedMult,true);
+            }
             
         }
         

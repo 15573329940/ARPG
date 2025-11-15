@@ -19,7 +19,7 @@ namespace UGG.Combat
         protected int rAtkID = Animator.StringToHash("RAtk");
         protected int defenID = Animator.StringToHash("Defen");
         protected int animationMoveID = Animator.StringToHash("AnimationMove");
-        
+        protected int sWeaponID = Animator.StringToHash("SWeapon");
         //攻击检测
         [SerializeField, Header("攻击检测")] protected Transform attackDetectionCenter;
         [SerializeField] protected float attackDetectionRang;
@@ -43,7 +43,6 @@ namespace UGG.Combat
         /// <param name="hitName">传递受伤动画名</param>
         protected virtual void OnAnimationAttackEvent(string hitName)
         {
-            if(!_animator.CheckAnimationTag("Attack")) return;
 
             Collider[] attackDetectionTargets = new Collider[4];
 
@@ -56,12 +55,22 @@ namespace UGG.Combat
                 {
                     if (attackDetectionTargets[i].TryGetComponent(out IDamagar damagar))
                     {
-                        damagar.TakeDamager(hitName);
+                        damagar.TakeDamager(0, hitName,transform.root);
                         
                     }
                 }
             }
-            GameAssets.Instance.PlaySoundEffect(_audioSource,SoundAssetsType.swordWave);
+            PlayWeaponSound();
+        }
+        /// <summary>
+        /// 视频里的PlayerWeaponEffect
+        /// </summary>
+        void PlayWeaponSound()
+        {
+            if(_animator.CheckAnimationTag("GSAttack"))
+                GameAssets.Instance.PlaySoundEffect(_audioSource,SoundAssetsType.hSwordWave);
+            else if(_animator.CheckAnimationTag("Attack"))
+                GameAssets.Instance.PlaySoundEffect(_audioSource,SoundAssetsType.swordWave);
         }
 
         private void OnDrawGizmos()

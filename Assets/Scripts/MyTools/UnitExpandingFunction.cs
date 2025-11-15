@@ -43,4 +43,14 @@ public static class UnitExpandingFunction
         
         return  Quaternion.Lerp(self.rotation,newRotation,lerpTime * Time.deltaTime);
     }
+    public static Quaternion LockYOnTarget(this Transform transform, Transform target,Transform self,float lerpTime)
+    {
+        if (target == null) return self.rotation;
+
+        Vector3 targetDirection = (target.position - self.position).normalized;
+        targetDirection.y = 0;
+        Quaternion newRotation = Quaternion.LookRotation(targetDirection);
+        
+        return  Quaternion.Lerp(self.rotation,newRotation,lerpTime * Time.deltaTime);
+    }
 }
